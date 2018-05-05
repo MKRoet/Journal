@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.sql.Timestamp;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,66 +16,103 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        EntryDatabase db = EntryDatabase.getInstance(getApplicationContext());
+
+        // Get database.
+        db = EntryDatabase.getInstance(getApplicationContext());
+
+        // Gets cursor with all entries.
+        Cursor cursor = db.selectAll();
+
+        // Get mainlist and set adapter.
         ListView mainList = findViewById(R.id.MainList);
-        EntryAdapter adapter = new EntryAdapter(this, db.selectAll());
+        adapter = new EntryAdapter(this, R.layout.entry_row, cursor, 1);
         mainList.setAdapter(adapter);
+
+        // Set onitemlongclick listener.
+        AdapterView.OnItemLongClickListener clickedlong = new ListItemLongClickListener();
+        mainList.setOnItemLongClickListener(clickedlong);
+
+        // Set onitemclick listener.
+        AdapterView.OnItemClickListener clicked = new ListItemClickListener();
+        mainList.setOnItemClickListener(clicked);
 
     }
 
     public void onFloatingClicked(View view) {
+
+        // If button clicked go to next event.
         Intent intent = new Intent(this, InputActivity.class);
         startActivity(intent);
     }
 
-
-
     private class ListItemClickListener implements AdapterView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        public void onItemClick(AdapterView<?> adapter, View view, int i, long l) {
 
-            // Remember position
-            int position = i;
+            // Get cursor.
+            Cursor clicked = (Cursor) adapter.getItemAtPosition(i);
 
-            // Add journalentry.
-            Cursor clicked = (Cursor) adapterView.getItemAtPosition(i);
-            String title = clicked.getString(clicked.getColumnIndex("title"));
-            String content = clicked.getString(clicked.getColumnIndex("content"));
-            String mood = clicked.getString(clicked.getColumnIndex("mood"));
-            String timestamp = clicked.getString(clicked.getColumnIndex("timestamp"));
-            JournalEntry clickedItem = new JournalEntry(title, content, mood);
+            // Get column.
+            int titleColumn = clicked.getColumnIndex("title");
+            int titleContent = clicked.getColumnIndex("content");
+            int titleMood = clicked.getColumnIndex("mood");
+            int titleTimestamp = clicked.getColumnIndex("timestamp");
 
-            // pass information to the next activity
+            // Get string in column.
+            String title = clicked.getString(titleColumn);
+            String content = clicked.getString(titleContent);
+            String mood = clicked.getString(titleMood);
+            String timestamp = clicked.getString(titleTimestamp);
+
+            // Create bundle and insert data.
+            Bundle bundle = new Bundle();
+            bundle.putString("title", title);
+            bundle.putString("content", content);
+            bundle.putString("mood", mood);
+            bundle.putString("timestamp", timestamp);
+
+            // Start next activity with appropriate data when clicked.
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-            intent.putExtra("clicked_item", clickedItem);
+            intent.putExtra("bundle", bundle);
             startActivity(intent);
-
         }
     }
 
     private class ListItemLongClickListener implements AdapterView.OnItemLongClickListener {
         @Override
-        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        public boolean onItemLongClick(AdapterView<?> adapter, View view, int i, long l) {
 
-            // get the id of the current item
-            Cursor clickedItem = (Cursor) adapterView.getItemAtPosition(i);
-            long id = clickedItem.getInt(clickedItem.getColumnIndex("_id"));
+            // Get position of clicked item.
+            Cursor clickedItem = (Cursor) adapter.getItemAtPosition(i);
 
-            // delete the item & update the main activity
+            // Get column id of clicked item and convert it to a long.
+            int temp = clickedItem.getColumnIndex("_id");
+            int tempId = clickedItem.getInt(temp);
+            long id = Long.valueOf(tempId);
+
+            // Delete item.
             db.delete(id);
-            updateData();
-            Toast.makeText(MainActivity.this, "The selected item is deleted.", Toast.LENGTH_SHORT).show();
 
-            // event is handled with
+            // Update mainlist.
+            updateData();
+
             return true;
         }
-        }
-    // make sure interface is up to date
-    private void updateData() {
-        adapter.swapCursor(db.selectAll());
     }
 
+    private void updateData() {
 
+        // Update interface.
+        Cursor update = db.selectAll();
+        adapter.swapCursor(update);
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+    }
 }

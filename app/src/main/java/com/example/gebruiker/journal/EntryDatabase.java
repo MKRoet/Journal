@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.Map;
+
 
 public class EntryDatabase extends SQLiteOpenHelper {
 
@@ -19,6 +21,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         // Create table.
         String SQLdb = "CREATE TABLE entries (\n"
                 + "	_id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
@@ -64,35 +67,32 @@ public class EntryDatabase extends SQLiteOpenHelper {
     public Cursor selectAll() {
         db = getWritableDatabase();
 
-        Cursor c = db.rawQuery("SELECT * FROM entries", null);
-        return c;
+        Cursor all = db.rawQuery("SELECT * FROM entries", null);
+        return all;
     }
 
     public void insert(JournalEntry entry) {
 
         // Opens database connection.
-        db = getWritableDatabase();
+        selectAll();
 
-        // set the content
+        // set the content.
         ContentValues contentValues = new ContentValues();
         contentValues.put("title", entry.getTitle());
         contentValues.put("content", entry.getContent());
         contentValues.put("mood", entry.getMood());
 
-//        // Inserts new entry.
-//        String entryInsert = "INSERT INTO entries"
-//                + "(title, content, mood) " + "VALUES"
-//                + "(entry.getTitle(), entry.getContent(), entry.getMood()";
-
         db.insert(entries, null, contentValues);
-//        db.execSQL(entryInsert);
     }
 
-    // delete an item
-    public void delete(long anId ){
+    public void delete(long id){
 
-        // Delete item.
-        getWritableDatabase().delete(entries, "_id = ?", new String[] {String.valueOf(anId)});
+//        db = getWritableDatabase();
+
+        // delete row from table
+        String query = "DELETE from entries WHERE _id = " + id + ";";
+        db.execSQL(query);
+
     }
 
 

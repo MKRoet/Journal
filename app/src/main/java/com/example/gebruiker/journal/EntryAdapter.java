@@ -9,9 +9,8 @@ import android.widget.TextView;
 public class EntryAdapter extends ResourceCursorAdapter {
 
     // Constructor.
-    public EntryAdapter(Context context, Cursor cursor) {
-        super(context, R.layout.entry_row, cursor);
-
+    public EntryAdapter(Context context, int layout, Cursor cursor, int flags) {
+        super(context, R.layout.entry_row, cursor, flags);
     }
 
     public void bindView(View view, Context context, Cursor cursor) {
@@ -34,6 +33,5 @@ public class EntryAdapter extends ResourceCursorAdapter {
         TextView date = view.findViewById(R.id.date);
         date.setText(dateCursor);
     }
-
 }
 

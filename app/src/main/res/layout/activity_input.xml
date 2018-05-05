@@ -19,7 +19,6 @@
         android:id="@+id/contentInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:inputType="textPersonName"
         android:text="Content" />
 
@@ -27,7 +26,6 @@
         android:id="@+id/moodInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:inputType="textPersonName"
         android:text="Mood" />
 
@@ -35,7 +33,7 @@
         android:id="@+id/SubmitEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="SubmitClicked"
+        android:onClick="addEntry"
         android:text="Submit" />
 
 </LinearLayout>

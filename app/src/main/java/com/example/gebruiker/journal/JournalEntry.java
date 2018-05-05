@@ -32,10 +32,6 @@ public class JournalEntry implements Serializable {
         return mood;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
     //Setters.
     public void setId(int id) {
         this.id = id;
@@ -51,9 +47,5 @@ public class JournalEntry implements Serializable {
 
     public void setMood(String mood) {
         this.mood = mood;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
     }
 }
