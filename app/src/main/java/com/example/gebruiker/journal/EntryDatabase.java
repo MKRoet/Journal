@@ -88,4 +88,12 @@ public class EntryDatabase extends SQLiteOpenHelper {
 //        db.execSQL(entryInsert);
     }
 
+    // delete an item
+    public void delete(long anId ){
+
+        // Delete item.
+        getWritableDatabase().delete(entries, "_id = ?", new String[] {String.valueOf(anId)});
+    }
+
+
 }
